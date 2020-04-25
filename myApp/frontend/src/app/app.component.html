@@ -1,0 +1,18 @@
+<ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+  <ngb-panel title="Simple">
+    <ng-template ngbPanelContent>
+      This is the first test with ng-bootstrap.
+    </ng-template>
+  </ngb-panel>
+  <ngb-panel>
+    <ng-template ngbPanelTitle>
+      <span>Click me! I will show a secret!</span>
+    </ng-template>
+    <ng-template ngbPanelContent>
+      Congratulations! You just have successfully installed ng-bootstrap!
+      (You can remove ngb-accordion from app.component.html)
+    </ng-template>
+  </ngb-panel>
+</ngb-accordion>
+
+<router-outlet></router-outlet>
