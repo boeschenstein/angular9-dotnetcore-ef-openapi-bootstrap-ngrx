@@ -82,6 +82,67 @@ rem Add and Configure NgRx
 ng add @ngrx/store --minimal false
 ```
 
+## NgRx
+
+### NgRx Testing
+
+<https://christianlydemann.com/the-complete-guide-to-ngrx-testing/>
+
+### Good to know
+
+```typescript
+import { Location } from '@angular/common'; // needed to avoid error:  NullInjectorError: No provider for Location!
+
+TestBed.configureTestingModule({
+  imports: [
+    StoreModule.forRoot({}), // needed to avoid error: NullInjectorError: No provider for Store!
+    EffectsModule.forRoot([]), // needed to avoid error: NullInjectorError: No provider for Actions!
+    HttpClientModule, // needed to avoid error: NullInjectorError: No provider for HttpClient!
+  ],
+  declarations: [MasterComponent],
+}).compileComponents();
+```
+
+## Angular Testing with Jasmine, Karma
+
+### Route testing
+
+```typescript
+import { Location } from '@angular/common'; // needed to avoid error:  NullInjectorError: No provider for Location!
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MasterComponent } from '@app/layout/components';
+import { routes } from './app-routing.module';
+
+describe('Router: App', () => {
+  let location: Location;
+  let router: Router;
+  //let fixture: ComponentFixture<MasterComponent>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule.withRoutes(routes),
+      ],
+      declarations: [MasterComponent],
+    }).compileComponents();
+
+    router = TestBed.get(Router);
+    location = TestBed.get(Location);
+
+    //fixture = TestBed.createComponent(MasterComponent);
+    router.initialNavigation();
+  });
+
+  it('navigate to "" redirects you to /', fakeAsync(() => {
+    router.navigate(['admin']);
+    tick();
+    expect(location.path()).toBe('/admin'); // tbv
+  }));
+
+```
+
 ## What's next
 
 ## Additional Information
