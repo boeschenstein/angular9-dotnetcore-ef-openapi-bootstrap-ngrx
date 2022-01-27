@@ -88,19 +88,48 @@ ng add @ngrx/store --minimal false
 
 <https://christianlydemann.com/the-complete-guide-to-ngrx-testing/>
 
-### Good to know
+### Test config
 
 ```typescript
-import { Location } from '@angular/common'; // needed to avoid error:  NullInjectorError: No provider for Location!
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MasterComponent } from '@app/layout/components';
+import * as fromSharedReducers from '@app/store/shared/reducers';
+import { sharedFeatureKey } from '@app/store/shared/reducers';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
+import { MockStore, provideMockStore } from '@ngrx/store/testing';
 
-TestBed.configureTestingModule({
-  imports: [
-    StoreModule.forRoot({}), // needed to avoid error: NullInjectorError: No provider for Store!
-    EffectsModule.forRoot([]), // needed to avoid error: NullInjectorError: No provider for Actions!
-    HttpClientModule, // needed to avoid error: NullInjectorError: No provider for HttpClient!
-  ],
-  declarations: [MasterComponent],
-}).compileComponents();
+export interface FullTestBedState {
+  [sharedFeatureKey]: fromSharedReducers.SharedState;
+}
+
+let mockStore: MockStore<FullTestBedState>;
+const sharedState = {
+  msg: '',
+} as fromSharedReducers.SharedState;
+const initialState: FullTestBedState = {
+  [sharedFeatureKey]: sharedState,
+};
+
+describe('Router: App', () => {
+  let fixture: ComponentFixture<MasterComponent>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule.withRoutes(routes),
+        StoreModule.forRoot({}), // needed to avoid error: NullInjectorError: No provider for Store!
+        EffectsModule.forRoot([]), // needed to avoid error: NullInjectorError: No provider for Actions!
+        HttpClientModule, // needed to avoid error: NullInjectorError: No provider for HttpClient!
+      ],
+      declarations: [MasterComponent],
+      providers: [provideMockStore({ initialState })],
+    }).compileComponents();
+    mockStore = TestBed.get(Store);
+
+    fixture = TestBed.createComponent(MasterComponent);
+  });
 ```
 
 ## Angular Testing with Jasmine, Karma
@@ -124,6 +153,7 @@ describe('Router: App', () => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule.withRoutes(routes),
+        HttpClientModule, // needed to avoid error: NullInjectorError: No provider for HttpClient!
       ],
       declarations: [MasterComponent],
     }).compileComponents();
